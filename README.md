@@ -2,6 +2,7 @@
 龙珠激战传说mod，仅用于单机测试
 
 测试站(国外)：https://sun.rf.gd/?i=1
+
 测试站(国内)：https://dbl.kuiyr.com.mp
 
 
