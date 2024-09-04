@@ -14,7 +14,7 @@ body {
 .side-wallpaper {
     position: absolute;
     top: 0;
-    width: 20%;
+    width: 35%;
     height: 100vh;
     background-size: cover;
     background-position: center;
@@ -23,12 +23,12 @@ body {
 
 .left-wallpaper {
     left: 0;
-    background-image: url('https://dbl.sun.x10.mx/images/left-wallpaper.jpg') !important; /* 确认路径 */
+    background-image: url('../images/left-wallpaper.webp') !important; /* 确认路径 */
 }
 
 .right-wallpaper {
     right: 0;
-    background-image: url('https://dbl.sun.x10.mx/images/left-wallpaper.jpg') !important; /* 确认路径 */
+    background-image: url('../images/right-wallpaper.webp') !important; /* 确认路径 */
 }
 
 
