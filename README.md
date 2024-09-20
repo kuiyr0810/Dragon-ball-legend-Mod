@@ -3,7 +3,7 @@
 
 测试站(国外)：https://dbl.sun.x10.mx
 
-测试站(国内)：https://suns.nyc.mn
+测试站(国内)：http://suns.nyc.mn
 
 
 使用说明：（仅可PvE，NO PvP）
