@@ -108,12 +108,6 @@ function modifyJson($jsonContent, $functionName) {
     return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
 
-function generateRandomCreateTime() {
-    $prefix = "17136"; // 保持前五位不变
-    $suffix = mt_rand(100000, 999999); // 生成六位随机数
-    return (int)($prefix . $suffix);
-}
-
 
 
 
