@@ -1,10 +1,10 @@
+
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require 'functions.php';
-require 'bitwiseNot.php';
 
 ?>
 
@@ -25,17 +25,11 @@ require 'bitwiseNot.php';
                 $tempFilePath = $_FILES['file']['tmp_name'];
                 $action = $_POST['action'];
 
-                // 初次按位取反操作
-                if (!bitwiseNot($tempFilePath)) {
-                    echo '<p class="error">初次按位取反操作失败</p>';
-                    exit;
-                }
-
                 // 读取文件内容
                 $fileContent = file_get_contents($tempFilePath);
 
                 // 根据选择的操作处理文件
-                $newContent = dblmodify($fileContent, $action);
+                $newContent = jsonmodify($fileContent, $action);
                 if ($newContent === false) {
                     echo '<p class="error">JSON 处理失败</p>';
                     exit;
@@ -51,12 +45,6 @@ require 'bitwiseNot.php';
                 $processedFilePath = $uploadDir . $originalFileName;
                 if (file_put_contents($processedFilePath, $newContent) === false) {
                     echo '<p class="error">无法写入文件内容</p>';
-                    exit;
-                }
-
-                // 再次按位取反操作
-                if (!bitwiseNot($processedFilePath)) {
-                    echo '<p class="error">按位取反操作失败</p>';
                     exit;
                 }
 
@@ -77,30 +65,3 @@ require 'bitwiseNot.php';
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

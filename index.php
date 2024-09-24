@@ -30,44 +30,64 @@
         <div id="clock">00:00:00</div>
         <div class="container">
             <h2>上传并处理文件</h2>
-            <form action="process.php" method="post" enctype="multipart/form-data">
+            <form id="myForm" action="process.php" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                 <input class="sl" type="file" name="file" required>
                 <br><br>
                 <script>
                     function updateChildOptions() {
-                       try {
-                           // 获取父级元素的值
-                           const parentValue = document.getElementById("parentSelect").value;
-                           // 获取子级元素
-                           const action = document.getElementsByName("action")[0];
-
-                           // 清空子框选项
-                           action.innerHTML = '';
-
-                           // 设置子功能选项
-                           const optionsMap = {
-                               'option1': '<option value="1">请选择要处理的项目</option>',
-                               'option2': `
-                                   <option value="allcharacterfullstar">全角色满星</option>
-                                   <option value="allcharacterfullawaking">全角色全觉醒</option>
-                                   <option value="maxLevel5000">全角色5000级</option>
-                               `,
-                           };
-                           
-                           // 更新子功能下拉框
-                           if (optionsMap[parentValue]) {
-                               action.innerHTML += optionsMap[parentValue];
-                           }
-                       } catch (error) {
-                           console.error("更新子功能选项时出错：", error);
-                           alert("更新子功能选项失败，请重试。");
-                       }
+                        try {
+                            const parentValue = document.getElementById("parentSelect").value;
+                            const action = document.getElementsByName("action")[0];
+                            const form = document.getElementById("myForm");
+            
+                            // 清空子框选项
+                            action.innerHTML = '';
+            
+                            // 设置子功能选项
+                            const optionsMap = {
+                                'option1': '<option value="1">请选择要处理的项目</option>',
+                                'option2': `
+                                    <option value="2">请选择功能</option>
+                                    <option value="allcharacterfullstar">全角色满星</option>
+                                    <option value="allcharacterfullawaking">全角色全觉醒</option>
+                                    <option value="maxLevel5000">全角色5000级</option>
+                                `,
+                                'option3': `
+                                    <option value="3">请选择功能</option>
+                                    <option value="jsonformat">json格式化</option>
+                                `
+                            };
+            
+                            // 更新子功能下拉框
+                            if (optionsMap[parentValue]) {
+                                action.innerHTML = optionsMap[parentValue];
+                            } else {
+                                action.innerHTML = '<option value="">请先选择主功能</option>'; // 处理未知选项
+                            }
+            
+                            // 如果选择的是option2，修改form的action属性
+                            form.action = parentValue === 'option2' ? 'process.php' : 'process1.php'; // 设置action
+            
+                        } catch (error) {
+                            console.error("更新子功能选项时出错：", error);
+                            alert("更新子功能选项失败，请重试。");
+                        }
+                    }
+            
+                    function validateForm() {
+                        const action = document.getElementsByName("action")[0];
+                        if (action.value === "") {
+                            alert("请选择子功能后再提交表单。");
+                            return false; // 阻止表单提交
+                        }
+                        return true; // 允许提交
                     }
                 </script>
                 <label class="center" for="parentSelect">请选择要处理的项目:</label>
                 <select id="parentSelect" onchange="updateChildOptions()">
                     <option value="option1">请选择项目</option>
                     <option value="option2">龙珠激战传说MOD</option>
+                    <option value="option3">json文件处理</option>
                 </select>
                 <br><br>
                 <label class="center" for="action">选择子功能:</label>

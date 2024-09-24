@@ -1,112 +1,108 @@
 <?php
-function modifyJson($jsonContent, $functionName) {
+function dblmodify($jsonContent, $functionName) {
     $data = json_decode($jsonContent, true);
 
     if ($data === null) {
-        return false;
+        return json_encode(['error' => '无效的 JSON 内容'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
+    
+    switch ($functionName) {
+        case 'allcharacterfullstar':
+            if (isset($data['item']['characterShards_'])) {
+                foreach ($data['item']['characterShards_'] as &$shard) {
+                    if ($shard['count'] >= 100) {
+                        $shard['count'] = 9999;
+                    }
+                }
+            }
+            break;
 
-    if ($functionName === 'allcharacterfullstar') {
-        if (isset($data['item']['characterShards_'])) {
-            foreach ($data['item']['characterShards_'] as &$shard) {
-                if ($shard['count'] >= 100) {
+        case 'allcharacterfullawaking':
+            if (isset($data['item']['characterPlentyShards_'])) {
+                foreach ($data['item']['characterPlentyShards_'] as &$shard) {
                     $shard['count'] = 9999;
                 }
             }
-        }
-    } elseif ($functionName === 'allcharacterfullawaking') {
-        if (isset($data['item']['characterPlentyShards_'])) {
-            foreach ($data['item']['characterPlentyShards_'] as &$shard) {
-                $shard['count'] = 9999;
-            }
-        }
-    } elseif ($functionName === 'maxLevel5000') {
-        if (isset($data['unit']['unitInfo_'])) {
-            foreach ($data['unit']['unitInfo_'] as &$unit) {
-                $unit['level'] = 5000;
-            }
-        }
-    } elseif ($functionName === 'addUnitsAndCharacters') {
-        // 添加新的unit到unitInfo_
-        if (isset($data['unit']['unitInfo_'])) {
-            for ($i = 1; $i <= 621; $i++) {
-                $exists = false;
+            break;
+
+        case 'maxLevel5000':
+            if (isset($data['unit']['unitInfo_'])) {
                 foreach ($data['unit']['unitInfo_'] as &$unit) {
-                    if ($unit['id'] == $i) {
-                        $exists = true;
-                        break;
-                    }
-                }
-                if (!$exists) {
-                    $newUnit = [
-                        "id" => $i,
-                        "exp" => 0,
-                        "level" => 5000,
-                        "isTraining" => false,
-                        "isDispatch" => false,
-                        "boost" => [
-                            [
-                                "boardId" => 1,
-                                "releaseFlags_Low" => 0,
-                                "releaseFlags_Hight" => 0
-                            ]
-                        ],
-                        "createTime" => generateRandomCreateTime(),
-                        "friendshipPoint" => 0,
-                        "friendshipLevel" => 0,
-                        "friendshipLap" => 1,
-                        "strikeArtsBoost" => 1,
-                        "shotArtsBoost" => 1,
-                        "specialArtsBoost" => 1
-                    ];
-                    $data['unit']['unitInfo_'][] = $newUnit;
+                    $unit['level'] = 5000;
                 }
             }
-        }
+            break;
 
-        // 添加新的character到characterShards_
-        if (isset($data['item']['characterShards_'])) {
-            for ($i = 1; $i <= 621; $i++) {
-                $exists = false;
-                foreach ($data['item']['characterShards_'] as &$shard) {
-                    if ($shard['characterType'] == $i) {
-                        $exists = true;
-                        break;
-                    }
-                }
-                if (!$exists) {
-                    $newCharacterShard = [
-                        "characterType" => $i,
-                        "count" => 9999
-                    ];
-                    $data['item']['characterShards_'][] = $newCharacterShard;
-                }
+        case 'addUnitsAndCharacters':
+            if (isset($data['unit']['unitInfo_'])) {
+                addEntities($data['unit']['unitInfo_'], 'id', 621, 'unit');
             }
-        }
+            if (isset($data['item']['characterShards_'])) {
+                addEntities($data['item']['characterShards_'], 'characterType', 621, 'shard');
+            }
+            if (isset($data['item']['characterPlentyShards_'])) {
+                addEntities($data['item']['characterPlentyShards_'], 'characterType', 621, 'plentyShard');
+            }
+            break;
 
-        // 添加新的character到characterPlentyShards_
-        if (isset($data['item']['characterPlentyShards_'])) {
-            for ($i = 1; $i <= 621; $i++) {
-                $exists = false;
-                foreach ($data['item']['characterPlentyShards_'] as &$shard) {
-                    if ($shard['characterType'] == $i) {
-                        $exists = true;
-                        break;
-                    }
-                }
-                if (!$exists) {
-                    $newCharacterPlentyShard = [
-                        "characterType" => $i,
-                        "count" => 9999
-                    ];
-                    $data['item']['characterPlentyShards_'][] = $newCharacterPlentyShard;
-                }
-            }
-        }
+        default:
+            return json_encode(['error' => '无效的功能名称'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
     return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 }
+
+function addEntities(&$array, $key, $limit, $type) {
+    $existingIds = array_column($array, $key);
+    for ($i = 1; $i <= $limit; $i++) {
+        if (!in_array($i, $existingIds)) {
+            $newEntity = ($type === 'unit') ? [
+                "id" => $i,
+                "exp" => 0,
+                "level" => 5000,
+                "isTraining" => false,
+                "isDispatch" => false,
+                "boost" => [
+                    [
+                        "boardId" => 1,
+                        "releaseFlags_Low" => 0,
+                        "releaseFlags_Hight" => 0
+                    ]
+                ],
+                "createTime" => generateRandomCreateTime(),
+                "friendshipPoint" => 0,
+                "friendshipLevel" => 0,
+                "friendshipLap" => 1,
+                "strikeArtsBoost" => 1,
+                "shotArtsBoost" => 1,
+                "specialArtsBoost" => 1
+            ] : [
+                $key => $i,
+                "count" => 9999
+            ];
+            $array[] = $newEntity;
+        }
+    }
+}
+
+function jsonmodify($jsonContent, $functionName) {
+    $data = json_decode($jsonContent, true);
+
+    if ($data === null) {
+        return json_encode(['error' => '无效的 JSON 内容'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+    
+    switch ($functionName) {
+        case 'jsonformat':
+            return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        default:
+            return json_encode(['error' => '无效的功能名称'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+}
+    
+
+
 
 
 
