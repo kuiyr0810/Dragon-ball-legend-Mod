@@ -1,7 +1,7 @@
 # Dragon-ball-legend-Mod
 龙珠激战传说mod，仅用于单机测试
 
-测试站(国外)：https://dbl.sun.x10.mx
+测试站(国外)：https://dbl.sun.x10.mx(关闭)
 
 测试站(国内)：https://doc.suns.nyc.mn
 
